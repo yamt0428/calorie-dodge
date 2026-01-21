@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'services/storage_service.dart';
+import 'services/ad_service.dart';
 import 'providers/record_provider.dart';
 import 'providers/badge_provider.dart';
 import 'providers/goal_provider.dart';
@@ -18,6 +20,11 @@ void main() async {
   // ストレージサービスの初期化
   final storageService = StorageService();
   await storageService.init();
+  
+  // AdMobの初期化（モバイルプラットフォームのみ）
+  if (Platform.isAndroid || Platform.isIOS) {
+    await AdService().initialize();
+  }
   
   runApp(MyApp(storageService: storageService));
 }

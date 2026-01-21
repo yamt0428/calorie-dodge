@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import '../providers/badge_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/calendar_heatmap.dart';
 import '../widgets/badge_card.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'record_input_screen.dart';
 import 'record_detail_screen.dart';
 
@@ -68,62 +70,71 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: AppBar(
             title: const Text('カロリーセーブ'),
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 今日の回避カロリー
-                _buildTodayCard(recordProvider, formatter),
-                const SizedBox(height: 16),
+          body: Column(
+            children: [
+              // バナー広告（モバイルのみ）
+              if (Platform.isAndroid || Platform.isIOS)
+                const BannerAdWidget(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 今日の回避カロリー
+                      _buildTodayCard(recordProvider, formatter),
+                      const SizedBox(height: 16),
 
-                // 累計・連続記録カード
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        '累計',
-                        '${formatter.format(recordProvider.totalCalories)} kcal',
-                        Icons.local_fire_department,
+                      // 累計・連続記録カード
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              '累計',
+                              '${formatter.format(recordProvider.totalCalories)} kcal',
+                              Icons.local_fire_department,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(
+                              '連続記録',
+                              '${recordProvider.currentStreak} 日',
+                              Icons.whatshot,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
-                        '連続記録',
-                        '${recordProvider.currentStreak} 日',
-                        Icons.whatshot,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                // カレンダーヒートマップ
-                const Text(
-                  '記録カレンダー',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                      // カレンダーヒートマップ
+                      const Text(
+                        '記録カレンダー',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: CalendarHeatmap(
+                            data: dailyCalories,
+                            onDayTap: (date) => _showDayDetail(context, date, recordProvider),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 最近の記録
+                      _buildRecentRecords(recordProvider, formatter),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: CalendarHeatmap(
-                      data: dailyCalories,
-                      onDayTap: (date) => _showDayDetail(context, date, recordProvider),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 最近の記録
-                _buildRecentRecords(recordProvider, formatter),
-              ],
-            ),
+              ),
+            ],
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
