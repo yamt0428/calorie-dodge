@@ -29,29 +29,6 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
   final _actualGramController = TextEditingController();
   final _quantityController = TextEditingController(text: '1');
 
-  // プリセットカロリー
-  final _presets = [
-    {'name': 'おにぎり', 'calories': 180},
-    {'name': 'コンビニスイーツ', 'calories': 300},
-    {'name': 'ポテトチップス', 'calories': 350},
-    {'name': '菓子パン', 'calories': 400},
-    {'name': 'カップラーメン', 'calories': 450},
-    {'name': 'ケーキ', 'calories': 500},
-    {'name': 'ファストフードセット', 'calories': 800},
-  ];
-
-  // 計算入力用のプリセット（100gあたりのカロリー）
-  final _calcPresets = [
-    {'name': 'ご飯', 'baseGram': 100, 'baseCal': 168},
-    {'name': '食パン', 'baseGram': 100, 'baseCal': 260},
-    {'name': 'チョコレート', 'baseGram': 100, 'baseCal': 558},
-    {'name': 'ポテトチップス', 'baseGram': 100, 'baseCal': 554},
-    {'name': 'アイスクリーム', 'baseGram': 100, 'baseCal': 180},
-    {'name': 'クッキー', 'baseGram': 100, 'baseCal': 480},
-    {'name': 'ドーナツ', 'baseGram': 100, 'baseCal': 375},
-    {'name': 'ケーキ', 'baseGram': 100, 'baseCal': 350},
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -81,10 +58,17 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
     final actualGram = double.tryParse(_actualGramController.text) ?? 0;
     final quantity = double.tryParse(_quantityController.text) ?? 1;
 
-    if (baseGram > 0 && baseCal > 0 && actualGram > 0) {
+    // 入力があればカロリーを計算
+    if (baseGram > 0 && baseCal >= 0 && actualGram >= 0 && quantity >= 0) {
       // カロリー計算: (実際のグラム数 / 基準グラム数) × 基準カロリー × 個数
       final totalCalories = (actualGram / baseGram) * baseCal * quantity;
-      _caloriesController.text = totalCalories.round().toString();
+      setState(() {
+        _caloriesController.text = totalCalories.round().toString();
+      });
+    } else {
+      setState(() {
+        _caloriesController.text = '';
+      });
     }
   }
 
@@ -114,25 +98,6 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
         });
       }
     }
-  }
-
-  void _selectPreset(Map<String, dynamic> preset) {
-    setState(() {
-      _caloriesController.text = preset['calories'].toString();
-      if (_memoController.text.isEmpty) {
-        _memoController.text = preset['name'] as String;
-      }
-    });
-  }
-
-  void _selectCalcPreset(Map<String, dynamic> preset) {
-    setState(() {
-      _baseGramController.text = preset['baseGram'].toString();
-      _baseCaloriesController.text = preset['baseCal'].toString();
-      if (_memoController.text.isEmpty) {
-        _memoController.text = preset['name'] as String;
-      }
-    });
   }
 
   Future<void> _saveRecord() async {
@@ -224,48 +189,8 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
 
               const SizedBox(height: 24),
 
-              // 計算結果のカロリー表示（計算モードの場合）
-              if (_inputMode == 1) ...[
-                const Text(
-                  '計算結果',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.lightGreen1.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.primaryGreen),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.local_fire_department, color: AppTheme.primaryGreen),
-                      const SizedBox(width: 8),
-                      Text(
-                        _caloriesController.text.isNotEmpty
-                            ? '${NumberFormat('#,###').format(int.tryParse(_caloriesController.text) ?? 0)} kcal'
-                            : '-- kcal',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryGreen,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-
               // カロリー入力フィールド（直接入力モードの場合のみバリデーション用に必要）
-              if (_inputMode == 0) ...[
-                // 直接入力モードでは上で表示済み
-              ] else ...[
+              if (_inputMode == 1) ...[
                 // 計算モードでは非表示だがバリデーション用に保持
                 Visibility(
                   visible: false,
@@ -393,32 +318,13 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
             return null;
           },
         ),
-        const SizedBox(height: 16),
-
-        // プリセット
-        const Text(
-          'プリセット',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _presets.map((preset) {
-            return ActionChip(
-              label: Text('${preset['name']} (${preset['calories']}kcal)'),
-              onPressed: () => _selectPreset(preset),
-            );
-          }).toList(),
-        ),
       ],
     );
   }
 
   Widget _buildCalculatorSection() {
+    final calculatedCalories = int.tryParse(_caloriesController.text) ?? 0;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -444,30 +350,9 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
-        // 食品プリセット
-        const Text(
-          '食品を選択（100gあたりのカロリー）',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _calcPresets.map((preset) {
-            return ActionChip(
-              label: Text('${preset['name']} (${preset['baseCal']}kcal)'),
-              onPressed: () => _selectCalcPreset(preset),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 24),
-
-        // 基準値入力
+        // 基準値入力（縦並び）
         const Text(
           '栄養成分表示の基準値',
           style: TextStyle(
@@ -475,49 +360,41 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
             color: AppTheme.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _baseGramController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-                ],
-                decoration: const InputDecoration(
-                  labelText: '基準量',
-                  suffixText: 'g',
-                  hintText: '100',
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'あたり',
-                style: TextStyle(color: AppTheme.textSecondary),
-              ),
-            ),
-            Expanded(
-              child: TextFormField(
-                controller: _baseCaloriesController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-                ],
-                decoration: const InputDecoration(
-                  labelText: 'カロリー',
-                  suffixText: 'kcal',
-                  hintText: '350',
-                ),
-              ),
-            ),
+        const SizedBox(height: 12),
+        
+        // 基準グラム数
+        TextFormField(
+          controller: _baseGramController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
           ],
+          decoration: const InputDecoration(
+            labelText: '基準量（g）',
+            suffixText: 'g あたり',
+            hintText: '100',
+            prefixIcon: Icon(Icons.scale),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        
+        // 基準カロリー
+        TextFormField(
+          controller: _baseCaloriesController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+          ],
+          decoration: const InputDecoration(
+            labelText: 'カロリー（kcal）',
+            suffixText: 'kcal',
+            hintText: '350',
+            prefixIcon: Icon(Icons.local_fire_department),
+          ),
+        ),
+        const SizedBox(height: 24),
 
-        // 実際の摂取量入力
+        // 実際の摂取量入力（縦並び）
         const Text(
           '回避した量',
           style: TextStyle(
@@ -525,84 +402,120 @@ class _RecordInputScreenState extends State<RecordInputScreen> {
             color: AppTheme.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: TextFormField(
-                controller: _actualGramController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-                ],
-                decoration: const InputDecoration(
-                  labelText: '1個あたりの量',
-                  suffixText: 'g',
-                  hintText: '50',
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                '×',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ),
-            Expanded(
-              child: TextFormField(
-                controller: _quantityController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-                ],
-                decoration: const InputDecoration(
-                  labelText: '個数',
-                  suffixText: '個',
-                  hintText: '1',
-                ),
-              ),
-            ),
+        const SizedBox(height: 12),
+        
+        // 1個あたりのグラム数
+        TextFormField(
+          controller: _actualGramController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
           ],
+          decoration: const InputDecoration(
+            labelText: '1個あたりの量（g）',
+            suffixText: 'g',
+            hintText: '50',
+            prefixIcon: Icon(Icons.fitness_center),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        
+        // 個数
+        TextFormField(
+          controller: _quantityController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+          ],
+          decoration: const InputDecoration(
+            labelText: '個数',
+            suffixText: '個',
+            hintText: '1',
+            prefixIcon: Icon(Icons.numbers),
+          ),
+        ),
+        const SizedBox(height: 24),
 
-        // 計算式の表示
-        if (_baseGramController.text.isNotEmpty &&
-            _baseCaloriesController.text.isNotEmpty &&
-            _actualGramController.text.isNotEmpty) ...[
-          Card(
-            color: Colors.grey[100],
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '計算式:',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '(${_actualGramController.text}g ÷ ${_baseGramController.text}g) × ${_baseCaloriesController.text}kcal × ${_quantityController.text}個',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                ],
-              ),
+        // 計算結果の表示（常に表示）
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: calculatedCalories > 0 
+                ? AppTheme.lightGreen1.withValues(alpha: 0.3)
+                : Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: calculatedCalories > 0 
+                  ? AppTheme.primaryGreen 
+                  : AppTheme.borderColor,
+              width: calculatedCalories > 0 ? 2 : 1,
             ),
           ),
-        ],
+          child: Column(
+            children: [
+              Text(
+                '計算結果',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: calculatedCalories > 0 
+                      ? AppTheme.primaryGreen 
+                      : AppTheme.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.local_fire_department,
+                    color: calculatedCalories > 0 
+                        ? AppTheme.primaryGreen 
+                        : AppTheme.textSecondary,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    calculatedCalories > 0
+                        ? '${NumberFormat('#,###').format(calculatedCalories)} kcal'
+                        : '-- kcal',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: calculatedCalories > 0 
+                          ? AppTheme.primaryGreen 
+                          : AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              
+              // 計算式の表示
+              if (_baseGramController.text.isNotEmpty &&
+                  _baseCaloriesController.text.isNotEmpty &&
+                  _actualGramController.text.isNotEmpty &&
+                  _quantityController.text.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${_actualGramController.text}g ÷ ${_baseGramController.text}g × ${_baseCaloriesController.text}kcal × ${_quantityController.text}個',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontFamily: 'monospace',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }
