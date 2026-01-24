@@ -72,9 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           body: Column(
             children: [
-              // バナー広告（モバイルのみ）
-              if (Platform.isAndroid || Platform.isIOS)
-                const BannerAdWidget(),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
@@ -130,10 +127,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // 最近の記録
                       _buildRecentRecords(recordProvider, formatter),
+                      // 広告分の余白
+                      const SizedBox(height: 60),
                     ],
                   ),
                 ),
               ),
+              // バナー広告（モバイルのみ）- 画面下部に配置
+              if (Platform.isAndroid || Platform.isIOS)
+                const BannerAdWidget(),
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(

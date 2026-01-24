@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'services/storage_service.dart';
 import 'services/ad_service.dart';
+import 'services/analytics_service.dart';
 import 'providers/record_provider.dart';
 import 'providers/badge_provider.dart';
 import 'providers/goal_provider.dart';
@@ -21,9 +22,16 @@ void main() async {
   final storageService = StorageService();
   await storageService.init();
   
-  // AdMobの初期化（モバイルプラットフォームのみ）
+  // モバイルプラットフォームのみで初期化
   if (Platform.isAndroid || Platform.isIOS) {
+    // AdMobの初期化
     await AdService().initialize();
+    
+    // Meta SDK (Facebook App Events) の初期化
+    await AnalyticsService().initialize();
+    
+    // アプリ起動イベントをログ
+    AnalyticsService().logAppOpen();
   }
   
   runApp(MyApp(storageService: storageService));

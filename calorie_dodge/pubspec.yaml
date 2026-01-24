@@ -43,6 +43,7 @@ dependencies:
   share_plus: ^12.0.1
   path_provider: ^2.1.5
   google_mobile_ads: ^7.0.0
+  facebook_app_events: ^0.24.0
 
 dev_dependencies:
   flutter_test:

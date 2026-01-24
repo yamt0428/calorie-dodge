@@ -55,6 +55,43 @@
 			<key>SKAdNetworkIdentifier</key>
 			<string>cstr6suwn9.skadnetwork</string>
 		</dict>
+		<!-- Facebook/Meta SKAdNetwork IDs -->
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>v9wttpbfk9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>n38lu8286q.skadnetwork</string>
+		</dict>
 	</array>
+	
+	<!-- Facebook SDK / Meta SDK 設定 -->
+	<!-- TODO: 本番環境では実際のFacebookアプリIDに置き換えてください -->
+	<key>FacebookAppID</key>
+	<string>YOUR_FACEBOOK_APP_ID</string>
+	<key>FacebookClientToken</key>
+	<string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
+	<key>FacebookDisplayName</key>
+	<string>カロリーセーブ</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
+	
+	<!-- Facebook SDK用のURLスキーム -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fbYOUR_FACEBOOK_APP_ID</string>
+			</array>
+		</dict>
+	</array>
+	
+	<!-- App Tracking Transparency 用の説明文 -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>より関連性の高い広告を表示し、アプリの改善に役立てるために、トラッキングの許可をお願いしています。</string>
 </dict>
 </plist>
