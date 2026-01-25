@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'statistics_screen.dart';
-import 'goal_screen.dart';
-import 'badge_screen.dart';
+import 'weight_screen.dart';
+import 'goal_badge_screen.dart';
 import 'settings_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -18,8 +18,8 @@ class _MainNavigationState extends State<MainNavigation> {
   final _screens = const [
     HomeScreen(),
     StatisticsScreen(),
-    GoalScreen(),
-    BadgeScreen(),
+    WeightScreen(),
+    GoalBadgeScreen(),
     SettingsScreen(),
   ];
 
@@ -47,14 +47,14 @@ class _MainNavigationState extends State<MainNavigation> {
             label: '統計',
           ),
           NavigationDestination(
-            icon: Icon(Icons.flag_outlined),
-            selectedIcon: Icon(Icons.flag),
-            label: '目標',
+            icon: Icon(Icons.monitor_weight_outlined),
+            selectedIcon: Icon(Icons.monitor_weight),
+            label: '体重',
           ),
           NavigationDestination(
             icon: Icon(Icons.emoji_events_outlined),
             selectedIcon: Icon(Icons.emoji_events),
-            label: 'バッジ',
+            label: '目標',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

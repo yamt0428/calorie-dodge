@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../providers/record_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/stat_card.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'record_detail_screen.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -44,11 +46,20 @@ class _StatisticsScreenState extends State<StatisticsScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _buildGraphTab(),
-          _buildRecordListTab(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildGraphTab(),
+                _buildRecordListTab(),
+              ],
+            ),
+          ),
+          // バナー広告
+          if (Platform.isAndroid || Platform.isIOS)
+            const BannerAdWidget(),
         ],
       ),
     );

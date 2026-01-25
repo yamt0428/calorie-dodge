@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../providers/record_provider.dart';
 import '../providers/badge_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/banner_ad_widget.dart';
 
 // ignore_for_file: deprecated_member_use
 
@@ -17,9 +19,12 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('設定'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Column(
         children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
           // シェア機能
           _buildSectionHeader('シェア'),
           Card(
@@ -125,6 +130,12 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
+              ],
+            ),
+          ),
+          // バナー広告
+          if (Platform.isAndroid || Platform.isIOS)
+            const BannerAdWidget(),
         ],
       ),
     );

@@ -2,17 +2,22 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/record.dart';
 import '../models/goal.dart';
 import '../models/badge.dart';
+import '../models/weight_record.dart';
 
 class StorageService {
   static const String recordsBoxName = 'records';
   static const String goalsBoxName = 'goals';
   static const String badgesBoxName = 'badges';
   static const String settingsBoxName = 'settings';
+  static const String weightRecordsBoxName = 'weight_records';
+  static const String weightGoalsBoxName = 'weight_goals';
 
   late Box<CalorieRecord> _recordsBox;
   late Box<Goal> _goalsBox;
   late Box<AppBadge> _badgesBox;
   late Box<dynamic> _settingsBox;
+  late Box<WeightRecord> _weightRecordsBox;
+  late Box<WeightGoal> _weightGoalsBox;
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -24,12 +29,16 @@ class StorageService {
     Hive.registerAdapter(GoalPeriodAdapter());
     Hive.registerAdapter(AppBadgeAdapter());
     Hive.registerAdapter(BadgeTypeAdapter());
+    Hive.registerAdapter(WeightRecordAdapter());
+    Hive.registerAdapter(WeightGoalAdapter());
 
     // ボックスを開く
     _recordsBox = await Hive.openBox<CalorieRecord>(recordsBoxName);
     _goalsBox = await Hive.openBox<Goal>(goalsBoxName);
     _badgesBox = await Hive.openBox<AppBadge>(badgesBoxName);
     _settingsBox = await Hive.openBox(settingsBoxName);
+    _weightRecordsBox = await Hive.openBox<WeightRecord>(weightRecordsBoxName);
+    _weightGoalsBox = await Hive.openBox<WeightGoal>(weightGoalsBoxName);
 
     // 初期バッジをセットアップ
     await _initializeBadges();
@@ -295,5 +304,48 @@ class StorageService {
 
     if (recordedDates.isEmpty) return 0;
     return getTotalCalories() / recordedDates.length;
+  }
+
+  // === Weight Records ===
+  Box<WeightRecord> get weightRecordsBox => _weightRecordsBox;
+
+  List<WeightRecord> getAllWeightRecords() {
+    return _weightRecordsBox.values.toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  }
+
+  Future<void> addWeightRecord(WeightRecord record) async {
+    await _weightRecordsBox.put(record.id, record);
+  }
+
+  Future<void> updateWeightRecord(WeightRecord record) async {
+    await _weightRecordsBox.put(record.id, record);
+  }
+
+  Future<void> deleteWeightRecord(String id) async {
+    await _weightRecordsBox.delete(id);
+  }
+
+  WeightRecord? getLatestWeightRecord() {
+    final records = getAllWeightRecords();
+    return records.isNotEmpty ? records.first : null;
+  }
+
+  // === Weight Goals ===
+  Box<WeightGoal> get weightGoalsBox => _weightGoalsBox;
+
+  WeightGoal? getWeightGoal() {
+    final goals = _weightGoalsBox.values.toList();
+    return goals.isNotEmpty ? goals.first : null;
+  }
+
+  Future<void> setWeightGoal(WeightGoal goal) async {
+    // 既存の目標を削除して新しい目標を設定
+    await _weightGoalsBox.clear();
+    await _weightGoalsBox.put(goal.id, goal);
+  }
+
+  Future<void> deleteWeightGoal() async {
+    await _weightGoalsBox.clear();
   }
 }

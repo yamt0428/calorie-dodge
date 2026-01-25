@@ -9,6 +9,7 @@ import 'services/analytics_service.dart';
 import 'providers/record_provider.dart';
 import 'providers/badge_provider.dart';
 import 'providers/goal_provider.dart';
+import 'providers/weight_provider.dart';
 import 'theme/app_theme.dart';
 import 'screens/main_navigation.dart';
 
@@ -54,6 +55,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => GoalProvider(storageService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WeightProvider(storageService),
         ),
       ],
       child: MaterialApp(

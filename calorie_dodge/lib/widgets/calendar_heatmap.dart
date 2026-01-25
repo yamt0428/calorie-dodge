@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-class CalendarHeatmap extends StatelessWidget {
+class CalendarHeatmap extends StatefulWidget {
   final Map<DateTime, int> data;
   final Function(DateTime)? onDayTap;
   final int weeksToShow;
@@ -19,42 +19,67 @@ class CalendarHeatmap extends StatelessWidget {
   });
 
   @override
+  State<CalendarHeatmap> createState() => _CalendarHeatmapState();
+}
+
+class _CalendarHeatmapState extends State<CalendarHeatmap> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // ウィジェットがビルドされた後に右端（最新）にスクロール
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     // 週の数分の日付を生成（日曜日スタート）
-    final startDate = today.subtract(Duration(days: today.weekday % 7 + (weeksToShow - 1) * 7));
+    final startDate = today.subtract(Duration(days: today.weekday % 7 + (widget.weeksToShow - 1) * 7));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ヒートマップ本体（横スクロール可能）
         SizedBox(
-          height: (cellSize + cellMargin * 2) * 7 + 30, // 7日分 + 月ラベル
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            // 最新の週が見えるように右端からスタート
-            reverse: false,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 曜日ラベル（固定）
-                _buildWeekdayLabels(),
-                const SizedBox(width: 8),
-                // グリッド本体
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 月ラベル
-                    _buildMonthLabels(startDate),
-                    const SizedBox(height: 4),
-                    // ヒートマップグリッド
-                    _buildHeatmapGrid(startDate, today),
-                  ],
+          height: (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) * 7 + 30, // 7日分 + 月ラベル
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 曜日ラベル（固定）
+              _buildWeekdayLabels(),
+              const SizedBox(width: 8),
+              // スクロール可能なグリッド部分
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 月ラベル
+                      _buildMonthLabels(startDate),
+                      const SizedBox(height: 4),
+                      // ヒートマップグリッド
+                      _buildHeatmapGrid(startDate, today),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 12),
@@ -87,12 +112,12 @@ class CalendarHeatmap extends StatelessWidget {
     int? lastMonth;
     double accumulatedWidth = 0;
 
-    for (int week = 0; week < weeksToShow; week++) {
+    for (int week = 0; week < widget.weeksToShow; week++) {
       final weekStart = startDate.add(Duration(days: week * 7));
       if (lastMonth != weekStart.month) {
         if (months.isNotEmpty) {
           // 前の月との間隔を調整
-          final gap = week * (cellSize + cellMargin * 2) - accumulatedWidth;
+          final gap = week * (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) - accumulatedWidth;
           if (gap > 0) {
             months.add(SizedBox(width: gap));
             accumulatedWidth += gap;
@@ -126,7 +151,7 @@ class CalendarHeatmap extends StatelessWidget {
       child: Column(
         children: List.generate(7, (index) {
           return Container(
-            height: cellSize + cellMargin * 2,
+            height: CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2,
             width: 24,
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 4),
@@ -146,7 +171,7 @@ class CalendarHeatmap extends StatelessWidget {
   Widget _buildHeatmapGrid(DateTime startDate, DateTime today) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(weeksToShow, (weekIndex) {
+      children: List.generate(widget.weeksToShow, (weekIndex) {
         return Column(
           children: List.generate(7, (dayIndex) {
             final date = startDate.add(Duration(days: weekIndex * 7 + dayIndex));
@@ -157,16 +182,16 @@ class CalendarHeatmap extends StatelessWidget {
             final isFuture = date.isAfter(today);
 
             return GestureDetector(
-              onTap: isFuture ? null : () => onDayTap?.call(date),
+              onTap: isFuture ? null : () => widget.onDayTap?.call(date),
               child: Container(
-                width: cellSize,
-                height: cellSize,
-                margin: EdgeInsets.all(cellMargin),
+                width: CalendarHeatmap.cellSize,
+                height: CalendarHeatmap.cellSize,
+                margin: EdgeInsets.all(CalendarHeatmap.cellMargin),
                 decoration: BoxDecoration(
                   color: isFuture
                       ? Colors.transparent
                       : AppTheme.getHeatmapColor(calories),
-                  borderRadius: BorderRadius.circular(cellRadius),
+                  borderRadius: BorderRadius.circular(CalendarHeatmap.cellRadius),
                   border: isToday
                       ? Border.all(color: AppTheme.primaryGreen, width: 2.5)
                       : null,
@@ -237,7 +262,7 @@ class CalendarHeatmap extends StatelessWidget {
 
   int _getCaloriesForDate(DateTime date) {
     final normalizedDate = DateTime(date.year, date.month, date.day);
-    return data[normalizedDate] ?? 0;
+    return widget.data[normalizedDate] ?? 0;
   }
 
   String _getMonthName(int month) {
