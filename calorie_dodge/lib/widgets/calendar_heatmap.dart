@@ -5,7 +5,7 @@ class CalendarHeatmap extends StatefulWidget {
   final Map<DateTime, int> data;
   final Function(DateTime)? onDayTap;
   final int weeksToShow;
-  
+
   // セルサイズ（タップしやすいように大きめに設定）
   static const double cellSize = 28.0;
   static const double cellMargin = 3.0;
@@ -48,14 +48,17 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
     final today = DateTime(now.year, now.month, now.day);
 
     // 週の数分の日付を生成（日曜日スタート）
-    final startDate = today.subtract(Duration(days: today.weekday % 7 + (widget.weeksToShow - 1) * 7));
+    final startDate = today.subtract(
+        Duration(days: today.weekday % 7 + (widget.weeksToShow - 1) * 7));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ヒートマップ本体（横スクロール可能）
         SizedBox(
-          height: (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) * 7 + 30, // 7日分 + 月ラベル
+          height:
+              (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) * 7 +
+                  30, // 7日分 + 月ラベル
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -117,7 +120,9 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
       if (lastMonth != weekStart.month) {
         if (months.isNotEmpty) {
           // 前の月との間隔を調整
-          final gap = week * (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) - accumulatedWidth;
+          final gap = week *
+                  (CalendarHeatmap.cellSize + CalendarHeatmap.cellMargin * 2) -
+              accumulatedWidth;
           if (gap > 0) {
             months.add(SizedBox(width: gap));
             accumulatedWidth += gap;
@@ -174,7 +179,8 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
       children: List.generate(widget.weeksToShow, (weekIndex) {
         return Column(
           children: List.generate(7, (dayIndex) {
-            final date = startDate.add(Duration(days: weekIndex * 7 + dayIndex));
+            final date =
+                startDate.add(Duration(days: weekIndex * 7 + dayIndex));
             final calories = _getCaloriesForDate(date);
             final isToday = date.year == today.year &&
                 date.month == today.month &&
@@ -191,14 +197,16 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
                   color: isFuture
                       ? Colors.transparent
                       : AppTheme.getHeatmapColor(calories),
-                  borderRadius: BorderRadius.circular(CalendarHeatmap.cellRadius),
+                  borderRadius:
+                      BorderRadius.circular(CalendarHeatmap.cellRadius),
                   border: isToday
-                      ? Border.all(color: AppTheme.primaryGreen, width: 2.5)
+                      ? Border.all(color: AppTheme.todayBorderColor, width: 1.5)
                       : null,
                   boxShadow: !isFuture && calories > 0
                       ? [
                           BoxShadow(
-                            color: AppTheme.getHeatmapColor(calories).withValues(alpha: 0.3),
+                            color: AppTheme.getHeatmapColor(calories)
+                                .withValues(alpha: 0.3),
                             blurRadius: 2,
                             offset: const Offset(0, 1),
                           ),
@@ -208,7 +216,7 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
                 child: isToday
                     ? const Center(
                         child: Text(
-                          '今',
+                          '',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -267,8 +275,19 @@ class _CalendarHeatmapState extends State<CalendarHeatmap> {
 
   String _getMonthName(int month) {
     const months = [
-      '', '1月', '2月', '3月', '4月', '5月', '6月',
-      '7月', '8月', '9月', '10月', '11月', '12月'
+      '',
+      '1月',
+      '2月',
+      '3月',
+      '4月',
+      '5月',
+      '6月',
+      '7月',
+      '8月',
+      '9月',
+      '10月',
+      '11月',
+      '12月'
     ];
     return months[month];
   }

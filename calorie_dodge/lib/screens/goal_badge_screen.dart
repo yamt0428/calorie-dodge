@@ -60,8 +60,7 @@ class _GoalBadgeScreenState extends State<GoalBadgeScreen>
             ),
           ),
           // バナー広告
-          if (Platform.isAndroid || Platform.isIOS)
-            const BannerAdWidget(),
+          if (Platform.isAndroid || Platform.isIOS) const BannerAdWidget(),
         ],
       ),
     );
@@ -538,7 +537,8 @@ class _GoalBadgeScreenState extends State<GoalBadgeScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                badge.name,
+                badge.name.replaceAll('\n', ''),
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

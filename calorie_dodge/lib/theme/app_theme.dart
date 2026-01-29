@@ -8,6 +8,8 @@ class AppTheme {
   static const Color lightGreen2 = Color(0xFF40c463);
   static const Color lightGreen3 = Color(0xFF30a14e);
   static const Color darkGreen = Color(0xFF216e39);
+  static const Color todayBorderColor = Color.fromARGB(255, 255, 94, 94);
+  static const Color weightAndFatIconColor = Color.fromARGB(255, 156, 170, 30);
 
   static const Color backgroundColor = Color(0xFFF6F8FA);
   static const Color cardColor = Colors.white;

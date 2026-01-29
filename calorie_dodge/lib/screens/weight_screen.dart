@@ -58,8 +58,7 @@ class _WeightScreenState extends State<WeightScreen>
             ),
           ),
           // バナー広告
-          if (Platform.isAndroid || Platform.isIOS)
-            const BannerAdWidget(),
+          if (Platform.isAndroid || Platform.isIOS) const BannerAdWidget(),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -159,7 +158,7 @@ class _WeightScreenState extends State<WeightScreen>
       String label, String value, IconData icon, String? difference) {
     return Column(
       children: [
-        Icon(icon, size: 32, color: AppTheme.primaryGreen),
+        Icon(icon, size: 32, color: AppTheme.weightAndFatIconColor),
         const SizedBox(height: 8),
         Text(
           label,
@@ -182,7 +181,9 @@ class _WeightScreenState extends State<WeightScreen>
             difference,
             style: TextStyle(
               fontSize: 12,
-              color: difference.startsWith('+') ? Colors.red : AppTheme.primaryGreen,
+              color: difference.startsWith('+')
+                  ? Colors.red
+                  : AppTheme.primaryGreen,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -293,7 +294,8 @@ class _WeightScreenState extends State<WeightScreen>
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.flag_outlined, size: 40, color: Colors.grey[300]),
+                    Icon(Icons.flag_outlined,
+                        size: 40, color: Colors.grey[300]),
                     const SizedBox(height: 8),
                     const Text(
                       '目標を設定しましょう',
@@ -521,8 +523,9 @@ class _WeightScreenState extends State<WeightScreen>
     }
 
     final sortedKeys = data.keys.toList()..sort();
-    final recentKeys =
-        sortedKeys.length > 10 ? sortedKeys.sublist(sortedKeys.length - 10) : sortedKeys;
+    final recentKeys = sortedKeys.length > 10
+        ? sortedKeys.sublist(sortedKeys.length - 10)
+        : sortedKeys;
 
     final spots = <FlSpot>[];
     for (var i = 0; i < recentKeys.length; i++) {
@@ -531,14 +534,19 @@ class _WeightScreenState extends State<WeightScreen>
 
     final minY = spots.map((e) => e.y).reduce((a, b) => a < b ? a : b);
     final maxY = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
-    final padding = (maxY - minY) * 0.1;
+    final yRange = maxY - minY;
+    final padding = yRange > 0 ? yRange * 0.1 : maxY * 0.1;
+
+    // horizontalIntervalが0にならないようにする
+    final horizontalInterval =
+        yRange > 0 ? yRange / 4 : (maxY > 0 ? maxY * 0.1 : 1.0);
 
     return LineChart(
       LineChartData(
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: (maxY - minY) / 4,
+          horizontalInterval: horizontalInterval,
           getDrawingHorizontalLine: (value) => FlLine(
             color: AppTheme.borderColor,
             strokeWidth: 1,
@@ -586,8 +594,10 @@ class _WeightScreenState extends State<WeightScreen>
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         lineBarsData: [
@@ -632,8 +642,10 @@ class _WeightScreenState extends State<WeightScreen>
                 ],
               )
             : null,
-        minY: minY - padding,
-        maxY: maxY + padding,
+        minY:
+            yRange > 0 ? minY - padding : minY - (maxY > 0 ? maxY * 0.1 : 1.0),
+        maxY:
+            yRange > 0 ? maxY + padding : maxY + (maxY > 0 ? maxY * 0.1 : 1.0),
       ),
     );
   }
@@ -738,8 +750,8 @@ class _WeightScreenState extends State<WeightScreen>
   void _showEditRecordDialog(BuildContext context, WeightRecord record) {
     final weightController =
         TextEditingController(text: record.weight.toString());
-    final bodyFatController = TextEditingController(
-        text: record.bodyFatPercentage?.toString() ?? '');
+    final bodyFatController =
+        TextEditingController(text: record.bodyFatPercentage?.toString() ?? '');
 
     showModalBottomSheet(
       context: context,

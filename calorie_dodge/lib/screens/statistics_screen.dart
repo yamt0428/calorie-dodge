@@ -58,8 +58,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
             ),
           ),
           // バナー広告
-          if (Platform.isAndroid || Platform.isIOS)
-            const BannerAdWidget(),
+          if (Platform.isAndroid || Platform.isIOS) const BannerAdWidget(),
         ],
       ),
     );
@@ -96,9 +95,8 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                     icon: Icons.local_fire_department,
                   ),
                   StatCard(
-                    title: '連続記録',
-                    value: '${stats['currentStreak']}日',
-                    subtitle: '最長: ${stats['maxStreak']}日',
+                    title: '最長連続記録',
+                    value: '${stats['maxStreak']}日',
                     icon: Icons.whatshot,
                   ),
                   StatCard(
@@ -108,12 +106,14 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                   ),
                   StatCard(
                     title: '1日最大',
-                    value: '${formatter.format(stats['maxDailyCalories'])} kcal',
+                    value:
+                        '${formatter.format(stats['maxDailyCalories'])} kcal',
                     icon: Icons.trending_up,
                   ),
                   StatCard(
                     title: '平均/1回',
-                    value: '${(stats['averageCaloriesPerRecord'] as double).toStringAsFixed(0)} kcal',
+                    value:
+                        '${(stats['averageCaloriesPerRecord'] as double).toStringAsFixed(0)} kcal',
                     icon: Icons.analytics,
                   ),
                 ],
@@ -260,8 +260,10 @@ class _StatisticsScreenState extends State<StatisticsScreen>
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         lineBarsData: [
@@ -361,7 +363,8 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: dayRecords.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final record = dayRecords[index];
                       return ListTile(

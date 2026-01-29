@@ -17,7 +17,7 @@ class BadgeCard extends StatelessWidget {
     return Card(
       color: badge.isUnlocked ? AppTheme.cardColor : Colors.grey[100],
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -28,7 +28,7 @@ class BadgeCard extends StatelessWidget {
                 color: badge.isUnlocked ? null : Colors.grey,
               ),
             ),
-            const SizedBox(height: 8),
+            // const SizedBox(height: 4),
             Text(
               badge.name,
               textAlign: TextAlign.center,
@@ -40,7 +40,7 @@ class BadgeCard extends StatelessWidget {
                     : AppTheme.textSecondary,
               ),
             ),
-            const SizedBox(height: 4),
+            // const SizedBox(height: 4),
             if (!badge.isUnlocked) ...[
               LinearProgressIndicator(
                 value: progress,

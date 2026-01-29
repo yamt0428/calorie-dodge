@@ -25,117 +25,92 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-          // シェア機能
-          _buildSectionHeader('シェア'),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.share),
-                  title: const Text('週間レポートをシェア'),
-                  subtitle: const Text('今週の成果をSNSに共有'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _shareWeeklyReport(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.image),
-                  title: const Text('累計成果をシェア'),
-                  subtitle: const Text('累計の記録をSNSに共有'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _shareTotalProgress(context),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // データ管理
-          _buildSectionHeader('データ管理'),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.download),
-                  title: const Text('データをエクスポート'),
-                  subtitle: const Text('記録データをテキスト形式で出力'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _exportData(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever, color: Colors.red),
-                  title: const Text(
-                    'すべてのデータを削除',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  subtitle: const Text('この操作は元に戻せません'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _confirmDeleteAllData(context),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // アプリ情報
-          _buildSectionHeader('アプリ情報'),
-          Card(
-            child: Column(
-              children: [
-                const ListTile(
-                  leading: Icon(Icons.info_outline),
-                  title: Text('バージョン'),
-                  trailing: Text('1.0.0'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.description_outlined),
-                  title: const Text('プライバシーポリシー'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showPrivacyPolicy(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.help_outline),
-                  title: const Text('使い方'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showHowToUse(context),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          // クレジット
-          Center(
-            child: Column(
-              children: [
-                const Text(
-                  'カロリーセーブ',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textSecondary,
+                // シェア機能
+                _buildSectionHeader('シェア'),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.share),
+                        title: const Text('週間レポートをシェア'),
+                        subtitle: const Text('今週の成果をSNSに共有'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _shareWeeklyReport(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.image),
+                        title: const Text('累計成果をシェア'),
+                        subtitle: const Text('累計の記録をSNSに共有'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _shareTotalProgress(context),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '誘惑に勝った自分を褒めよう',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[400],
+                const SizedBox(height: 24),
+
+                // データ管理
+                _buildSectionHeader('データ管理'),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.download),
+                        title: const Text('データをエクスポート'),
+                        subtitle: const Text('記録データをテキスト形式で出力'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _exportData(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading:
+                            const Icon(Icons.delete_forever, color: Colors.red),
+                        title: const Text(
+                          'すべてのデータを削除',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        subtitle: const Text('この操作は元に戻せません'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _confirmDeleteAllData(context),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
+                const SizedBox(height: 24),
+
+                // アプリ情報
+                _buildSectionHeader('アプリ情報'),
+                Card(
+                  child: Column(
+                    children: [
+                      const ListTile(
+                        leading: Icon(Icons.info_outline),
+                        title: Text('バージョン'),
+                        trailing: Text('1.0.0'),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.description_outlined),
+                        title: const Text('プライバシーポリシー'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _showPrivacyPolicy(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.help_outline),
+                        title: const Text('使い方'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _showHowToUse(context),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
           // バナー広告
-          if (Platform.isAndroid || Platform.isIOS)
-            const BannerAdWidget(),
+          if (Platform.isAndroid || Platform.isIOS) const BannerAdWidget(),
         ],
       ),
     );
@@ -222,10 +197,12 @@ class SettingsScreen extends StatelessWidget {
 
     final buffer = StringBuffer();
     buffer.writeln('カロリーセーブ データエクスポート');
-    buffer.writeln('エクスポート日時: ${DateFormat('yyyy/MM/dd HH:mm').format(DateTime.now())}');
+    buffer.writeln(
+        'エクスポート日時: ${DateFormat('yyyy/MM/dd HH:mm').format(DateTime.now())}');
     buffer.writeln('');
     buffer.writeln('=== 統計 ===');
-    buffer.writeln('累計カロリー: ${formatter.format(recordProvider.totalCalories)} kcal');
+    buffer.writeln(
+        '累計カロリー: ${formatter.format(recordProvider.totalCalories)} kcal');
     buffer.writeln('総記録回数: ${recordProvider.recordCount} 回');
     buffer.writeln('連続記録: ${recordProvider.currentStreak} 日');
     buffer.writeln('最長連続: ${recordProvider.maxStreak} 日');
